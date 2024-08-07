@@ -11,8 +11,9 @@ const leaderboardSchema = new Schema(
     score: {
       type: Number,
       default: function () {
-        return this.wins * 10 + this.losses * -5;
+        return Math.max(0, this.wins * 10 + this.losses * -5);
       },
+      min: 0,
     },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
