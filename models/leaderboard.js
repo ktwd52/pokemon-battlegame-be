@@ -8,6 +8,12 @@ const leaderboardSchema = new Schema(
     username: { type: String, required: [true, "Username is required"] },
     wins: { type: Number, required: [true, "Wins are required"], min: 0 },
     losses: { type: Number, required: [true, "Losses are required"], min: 0 },
+    score: {
+      type: Number,
+      default: function () {
+        return this.wins * 10 + this.losses * -5;
+      },
+    },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },
