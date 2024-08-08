@@ -28,6 +28,7 @@ export const createUserScore = asyncHandler(async (req, res) => {
     // If user exists, update the record
     user.wins = wins;
     user.losses = losses;
+    user.updatedAt = Date.now();
     await user.save();
     return res.status(200).json(user); // Updated status code to 200 for successful update
   }

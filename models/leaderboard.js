@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { AutoIncrementID } from "@typegoose/auto-increment";
+import { recalcScore } from "../middleware/recalcScore.js";
 
 // Defining the MongoDB collection schema
 const leaderboardSchema = new Schema(
@@ -8,13 +9,7 @@ const leaderboardSchema = new Schema(
     username: { type: String, required: [true, "Username is required"] },
     wins: { type: Number, required: [true, "Wins are required"], min: 0 },
     losses: { type: Number, required: [true, "Losses are required"], min: 0 },
-    score: {
-      type: Number,
-      default: function () {
-        return Math.max(0, this.wins * 10 + this.losses * -5);
-      },
-      min: 0,
-    },
+    score: { type: Number },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },
@@ -23,7 +18,10 @@ const leaderboardSchema = new Schema(
   { collection: "leaderboard" }
 );
 
+// Apply the pre-save middleware
+leaderboardSchema.plugin(AutoIncrementID, {}).pre("save", recalcScore);
+
 // Add auto-incrementing id plugin
-leaderboardSchema.plugin(AutoIncrementID, {});
+// leaderboardSchema;
 
 export default model("Leaderboard", leaderboardSchema);
