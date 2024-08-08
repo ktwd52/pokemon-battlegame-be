@@ -8,6 +8,7 @@ import "./db/mongoose.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
+const host = process.env.HOST || "localhost";
 
 app.use(cors());
 app.use(express.json());
@@ -19,4 +20,6 @@ app.use("*", (req, res) => res.status(404).json({ error: "Not Found" }));
 
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, host, () =>
+  console.log(`Server is running at http://${host}:${port}`)
+);
