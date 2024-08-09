@@ -39,16 +39,12 @@ export const deleteLeaderBoard = asyncHandler(async (req, res) => {
   const { delete_leaderboard } = req.body;
 
   if (delete_leaderboard !== "yes") {
-    return res
-      .status(400)
-      .json({ message: "Invalid request to delete leaderboard" });
+    return res.status(400).json({ message: "Invalid request to delete leaderboard" });
   }
 
   const dellb = await leaderboard.deleteMany({}); // returns deletedCount: 1 when deleted 0 when empty.
 
-  const delic = await mongoose.connection
-    .collection("identitycounters")
-    .deleteMany({}); // Ensure you replace 'identitycounters' with the actual collection name if different.
+  const delic = await mongoose.connection.collection("identitycounters").deleteMany({}); // Ensure you replace 'identitycounters' with the actual collection name if different.
 
   if (dellb.deletedCount === 0 && delic.deletedCount === 0) {
     throw new ErrorResponse("Leaderboard is already empty", 404);
@@ -59,4 +55,19 @@ export const deleteLeaderBoard = asyncHandler(async (req, res) => {
     deletedLeaderboardCount: dellb.deletedCount,
     deletedIdentityCountersCount: delic.deletedCount,
   });
+});
+
+export const getUserScore = asyncHandler(async (req, res) => {
+  const {
+    params: { username },
+  } = req;
+
+  if (!username) {
+    throw new ErrorResponse("Username is required", 400);
+  }
+
+  // Find the user in the leaderboard
+  const user = await leaderboard.findOne({ username: username });
+  if (!user) res.json({ username, wins: 0, losses: 0, score: 0 });
+  else res.json({ username: user.username, wins: user.wins, losses: user.losses, score: user.score });
 });
